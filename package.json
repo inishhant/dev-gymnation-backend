@@ -1,0 +1,14 @@
+{
+  "name": "dev-gymnation-backend",
+  "version": "1.0.0",
+  "description": "backend-dev",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gym"
+  ],
+  "author": "gymnation",
+  "license": "ISC"
+}
