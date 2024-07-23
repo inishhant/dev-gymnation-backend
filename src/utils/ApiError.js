@@ -20,7 +20,4 @@ class ApiError extends Error {
     }
 }
 
-// const error = new ApiError(201,"Not Found",["Bad request",""]);
-// console.log(error);
-
 export { ApiError };
