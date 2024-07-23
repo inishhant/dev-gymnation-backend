@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { DB_NAME } from "../constants.js";
+
 dotenv.config(
     {path:'./.env'}
 );
+
 export const connectDB = async () => {
     try {
       const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`, {
@@ -15,4 +17,4 @@ export const connectDB = async () => {
       console.log("MONGODB connection FAILED ", error);
       process.exit(1);
     }
-  };
+};

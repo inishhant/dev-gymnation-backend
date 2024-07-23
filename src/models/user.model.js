@@ -76,19 +76,19 @@ const userSchema = new Schema(
     },
     posts: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'post'
+      ref: 'Post'
     }],
     reels: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'reel'
+      ref: 'Reel'
     }],
     follower: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'follower'
+      ref: 'Follower'
     },
     following: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'following'
+      ref: 'Following'
     },
   },
   {
