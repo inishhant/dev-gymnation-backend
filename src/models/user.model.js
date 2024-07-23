@@ -1,9 +1,34 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { v4 as uuidv4 } from "uuid";
+
+const addressSchema = new Schema({
+  street: {
+    type: String,
+  },
+  city: {
+    type: String,
+  },
+  state: {
+  type: String,
+  },
+  country: {
+    type: String,
+  },
+  pincode: {
+    type: String,
+  }
+});
 
 const userSchema = new Schema(
   {
+    _id: {
+      type: String,
+      required: true,
+      index: true,
+      unique: true,
+    },
     username: {
       type: String,
       required: true,
@@ -19,19 +44,29 @@ const userSchema = new Schema(
       lowecase: true,
       trim: true,
     },
-    fullName: {
-      type: String,
-      required: true,
-      trim: true,
-      index: true,
-    },
-    avatar: {
-      type: String, // cloud url
-      required: true,
-    },
     password: {
       type: String,
       required: [true, "Password is required"],
+    },
+    firstName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    bio: {
+      type: String,
+    },
+    address: {
+      type: addressSchema,
+    },
+    profile_image: {
+      type: String, // cloud url
+      required: true,
     },
     refreshToken: {
       type: String,
@@ -39,16 +74,39 @@ const userSchema = new Schema(
     accessToken: {
       type: String,
     },
+    posts: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'post'
+    }],
+    reels: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'reel'
+    }],
+    follower: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'follower'
+    },
+    following: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'following'
+    },
   },
   {
     timestamps: true,
   }
 );
 
+userSchema.methods.fieldExists = function (fieldName) {
+  return this[fieldName];
+};
+
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   this.password = await bcrypt.hash(this.password, 10);
+
+  if (!this.fieldExists("_id")) this._id = uuidv4();
+
   next();
 });
 
