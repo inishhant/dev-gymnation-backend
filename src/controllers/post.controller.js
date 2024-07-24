@@ -55,4 +55,29 @@ const createPost = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, createdPost, "Post created Successfully"));
 });
 
-export { createPost };
+const deletePost = asyncHandler(async (req, res)=>{
+  const {post_id} = req.body;
+  const user = req.user;
+
+  const post = await Post.findByIdAndDelete(post_id);
+  if(!post){
+    throw new ApiError(404, "Post not found");
+  }
+  
+  const updateUserPosts = await User.findByIdAndUpdate(
+    user._id,
+    {
+      $pull: {
+        posts: post_id,
+      }
+    }
+  )
+  if(!updateUserPosts){
+    throw new ApiError(400, "Something went wrong while deleting the post");
+  }
+  return res
+    .status(201)
+    .json(new ApiResponse(200, "Post deleted successfully"));
+})
+
+export { createPost, deletePost };

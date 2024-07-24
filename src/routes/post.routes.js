@@ -2,7 +2,8 @@ import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 import {
-    createPost
+    createPost,
+    deletePost
 } from "../controllers/post.controller.js"
 import {upload} from "../middlewares/multer.middleware.js";
 
@@ -14,6 +15,10 @@ router.route("/create").post(
         {name: "videos"},
     ]),
     createPost
+)
+router.route("/delete").post(
+    verifyJWT,
+    deletePost
 )
 
 
