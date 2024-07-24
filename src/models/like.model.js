@@ -3,20 +3,17 @@ import { v4 as uuidv4 } from "uuid";
 
 const likeSchema = new Schema(
   {
-    likes_id: {
-      type: String,
-    },
     listOfUserIdForPost: {
       type: Array,
     },
     listOfUserIdForReels: {
       type: Array,
     },
-    post_id: {
+    post: {
         type: Schema.Types.ObjectId,
         ref: "Post"
     },
-    reel_id: {
+    reel: {
         type: Schema.Types.ObjectId,
         ref: "Reel"
     }
@@ -25,14 +22,5 @@ const likeSchema = new Schema(
     timestamps: true,
   }
 );
-
-likeSchema.methods.fieldExists = function (fieldName) {
-  return this[fieldName];
-};
-
-likeSchema.pre("save", async function (next) {
-  if (!this.fieldExists("_id")) this._id = uuidv4();
-  next();
-});
 
 export const Like = mongoose.model("Like", likeSchema);

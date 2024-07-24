@@ -1,7 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
 
 const addressSchema = new Schema({
   street: {
@@ -23,12 +22,6 @@ const addressSchema = new Schema({
 
 const userSchema = new Schema(
   {
-    _id: {
-      type: String,
-      required: true,
-      index: true,
-      unique: true,
-    },
     username: {
       type: String,
       required: true,
@@ -41,7 +34,7 @@ const userSchema = new Schema(
       type: String,
       required: true,
       unique: true,
-      lowecase: true,
+      lowercase: true,
       trim: true,
     },
     password: {
@@ -96,16 +89,10 @@ const userSchema = new Schema(
   }
 );
 
-userSchema.methods.fieldExists = function (fieldName) {
-  return this[fieldName];
-};
-
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   this.password = await bcrypt.hash(this.password, 10);
-
-  if (!this.fieldExists("_id")) this._id = uuidv4();
 
   next();
 });
