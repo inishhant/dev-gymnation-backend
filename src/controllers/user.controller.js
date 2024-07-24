@@ -129,7 +129,7 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  await User.findByIdAndUpdate(
+  const logoutUser = await User.findByIdAndUpdate(
     req.user._id,
     {
       $unset: {
@@ -140,6 +140,9 @@ const logoutUser = asyncHandler(async (req, res) => {
       new: true,
     },
   );
+  if(!logoutUser){
+    throw new ApiError(400, "User not found");
+  }
 
   const options = {
     httpOnly: true,
