@@ -2,12 +2,12 @@ import mongoose, { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
 const postSchema = new Schema({
-  image_url: {
+  image_url: [{
     type: String,
-  },
-  video_url: {
+  }],
+  video_url: [{
     type: String,
-  },
+  }],
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",

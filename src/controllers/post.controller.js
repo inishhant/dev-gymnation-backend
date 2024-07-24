@@ -13,17 +13,25 @@ const createPost = asyncHandler(async (req, res) => {
   if (!userExist) {
     throw new ApiError(409, "Invalid user_id");
   }
-  const post_images = file?.images[0];
+  const post_images = file?.images;
   const post_videos =
-    file?.videos && file?.videos.length > 0 ? file?.videos[0] : [];
-  const images = await uploadOnCloudinary(post_images?.path);
-  let videos;
+    file?.videos && file?.videos.length > 0 ? file?.videos : [];
+  let images = [];
+  for(let img of post_images){
+    const data = await uploadOnCloudinary(img.path);
+    images.push(data.url);
+  }
+
+  let videos = [];
   if (post_videos && post_videos.length > 0) {
-    videos = await uploadOnCloudinary(post_videos?.path);
+    for(let vdo of post_videos){
+      const data = await uploadOnCloudinary(vdo.path);
+      videos.push(data.url);
+    }
   }
   const post = await Post.create({
-    image_url: images.url,
-    video_url: videos && videos.url ? videos.url : "",
+    image_url: images,
+    video_url: videos,
     user: userExist._id,
   });
   const createdPost = await Post.findById(post._id);
@@ -35,8 +43,11 @@ const createPost = asyncHandler(async (req, res) => {
       posts: createdPost._id,
     },
   });
-  if(!updateUserPosts){
-    throw new ApiError(400, "Something went wrong while associating the post with user.")
+  if (!updateUserPosts) {
+    throw new ApiError(
+      400,
+      "Something went wrong while associating the post with user."
+    );
   }
 
   return res
