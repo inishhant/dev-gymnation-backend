@@ -54,12 +54,10 @@ const userSchema = new Schema(
     bio: {
       type: String,
     },
-    address: {
-      type: addressSchema,
-    },
+    address: addressSchema,
     profile_image: {
       type: String, // cloud url
-      required: true,
+      required: true, // we have to remove required field and add default image if user not upload
     },
     refreshToken: {
       type: String,
