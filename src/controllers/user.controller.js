@@ -21,17 +21,12 @@ const generateAccessAndRefreshToken = async (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, username, email, password } = req.body;
   if (
-    [firstName, lastName, email, password].some((field) => field?.trim() === "")
+    [firstName, lastName, username, email, password].some((field) => field?.trim() === "")
   ) {
     throw new ApiError(400, "All fields are required");
   }
-  
-  const normalizedFirstName = firstName.trim().toLowerCase();
-  let username = `${normalizedFirstName}`;
-  const randomSuffix = Math.floor(Math.random() * 1000);
-  username = `${username}${randomSuffix}`;
 
   const existedUser = await User.findOne({
     $or: [{ email }, { username }],
@@ -40,16 +35,13 @@ const registerUser = asyncHandler(async (req, res) => {
   if (existedUser) {
     throw new ApiError(409, "User already exists");
   }
-  //   console.log(req.files)
-  const avatarLocalPath = req.files?.avatar[0]?.path;
+  const avatarLocalPath = req.file.path;
   
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar is required");
   }
 
   const avatar = await uploadOnCloudinary(avatarLocalPath);
-
-  //   console.log(avatar)
 
   if (!avatar) {
     throw new ApiError(
@@ -64,10 +56,11 @@ const registerUser = asyncHandler(async (req, res) => {
     username,
     email,
     password,
-    avatar: avatar.url
+    profile_image: avatar.url
   });
 
-  const createdUser = User.findById(user._id).select("-password -refreshToken");
+
+  const createdUser = User.find({_id: user._id}).select("-password -refreshToken");
 
   if (!createdUser) {
     throw new ApiError(500, "Internal server error when creating user.");
@@ -88,7 +81,7 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
 
-  if (!(username && email)) {
+  if (!(username || email)) {
     throw new ApiError(400, "username or email is required.");
   }
 
