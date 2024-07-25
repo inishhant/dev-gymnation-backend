@@ -188,7 +188,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
   const { firstName, lastName, username, email, bio, address } = req.body;
 
   if (!(firstName && username && email)) {
-    throw new ApiError(400, "First name, username, and email are required.");
+    throw new ApiError(400, "first name, username, and email are required.");
   }
 
   const userId = req.user?._id;
