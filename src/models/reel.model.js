@@ -1,9 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const postSchema = new Schema({
-  image_url: [{
-    type: String,
-  }],
+const reelSchema = new Schema({
   video_url: [{
     type: String,
   }],
@@ -20,8 +17,8 @@ const postSchema = new Schema({
   likes:
     {
       type: Schema.Types.ObjectId,
-      ref: "Post_Like",
+      ref: "Reel_Like",
     },
 });
 
-export const Post = mongoose.model("Post", postSchema);
+export const Reel = mongoose.model("Reel", reelSchema);

@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
 import { Post } from "../models/post.model.js";
+import { Post_Like } from "../models/post_like.model.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -38,6 +39,14 @@ const createPost = asyncHandler(async (req, res) => {
   if (!createdPost) {
     throw new ApiError(500, "Something went wrong while creating the post.");
   }
+  const createPostLike = await Post_Like.create({
+    post: createdPost._id,
+  })
+  if(!createPostLike){
+    throw new ApiError(500, "Something went wrong while creating the post likes record.");
+  }
+  createdPost.likes = createPostLike._id;
+  await createdPost.save();
   const updateUserPosts = await User.findByIdAndUpdate(userExist._id, {
     $push: {
       posts: createdPost._id,
@@ -63,7 +72,7 @@ const deletePost = asyncHandler(async (req, res)=>{
   if(!post){
     throw new ApiError(404, "Post not found");
   }
-  
+
   const updateUserPosts = await User.findByIdAndUpdate(
     user._id,
     {
