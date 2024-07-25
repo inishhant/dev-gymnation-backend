@@ -132,9 +132,11 @@ const editComment = asyncHandler(async (req, res) => {
     throw new ApiError(409, "Unable to update comment");
   }
 
+  const newComment = await Reel_Comment.findById(comment_id);
+
   return res
     .status(201)
-    .json(new ApiResponse(200, updateComment, "Updated comment successfully"));
+    .json(new ApiResponse(200, newComment, "Updated comment successfully"));
 });
 
 export { commentOnReel, deleteCommentFromReel, editComment };

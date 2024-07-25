@@ -135,7 +135,9 @@ const editComment = asyncHandler(async (req, res)=>{
     throw new ApiError(409, 'Unable to update comment');
   }
 
-  return res.status(201).json(new ApiResponse(200, updateComment, "Updated comment successfully"))
+  const newComment = await Post_Comment.findById(comment_id);
+
+  return res.status(201).json(new ApiResponse(200, newComment, "Updated comment successfully"))
 })
 
 export { commentOnPost, deleteCommentFromPost, editComment };
