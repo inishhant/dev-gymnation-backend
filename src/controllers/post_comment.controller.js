@@ -82,7 +82,7 @@ const commentOnPost = asyncHandler(async (req, res) => {
 const deleteCommentFromPost = asyncHandler(async (req, res) => {
   const { post_id, comment_id } = req.body;
   const user = await req.user;
-
+  
   const userExist = await User.findById(user._id);
   if (!userExist) {
     throw new ApiError(409, "User does not exist");
