@@ -59,7 +59,11 @@ const userSchema = new Schema(
     },
     profile_image: {
       type: String, // cloud url
-      required: true,
+    },
+    account_type: {
+      type: String,
+      enum: ['public', 'private'],
+      default: 'public'
     },
     refreshToken: {
       type: String,

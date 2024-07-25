@@ -2,6 +2,10 @@ import mongoose, { Schema } from "mongoose";
 
 const postCommentSchema = new Schema(
   {
+    message: {
+      type: String,
+      required: true,
+    },
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -9,7 +13,8 @@ const postCommentSchema = new Schema(
     },
     post: {
       type: Schema.Types.ObjectId,
-      ref: "Post"
+      ref: "Post",
+      required: true,
     },
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
