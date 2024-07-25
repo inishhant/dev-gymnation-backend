@@ -2,6 +2,9 @@ import mongoose, { Schema } from "mongoose";
 
 const reelCommentSchema = new Schema(
   {
+    message: {
+      type: String,
+    },
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -9,12 +12,14 @@ const reelCommentSchema = new Schema(
     },
     reel: {
       type: Schema.Types.ObjectId,
-      ref: "Reel"
+      ref: "Reel",
     },
-    comments: [{
+    comments: [
+      {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Reel_Comment",
-    }],
+      },
+    ],
   },
   {
     timestamps: true,

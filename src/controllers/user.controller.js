@@ -35,15 +35,16 @@ const registerUser = asyncHandler(async (req, res) => {
   if (existedUser) {
     throw new ApiError(409, "User already exists");
   }
-  const avatarLocalPath = req.file.path;
+  const avatarLocalPath = req.file && req.file.path? req.file.path: '';
   
-  if (!avatarLocalPath) {
+  if (!avatarLocalPath && req.file && req.file.path) {
     throw new ApiError(400, "Avatar is required");
   }
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  let avatar = null;
+  if(avatarLocalPath) avatar = await uploadOnCloudinary(avatarLocalPath);
 
-  if (!avatar) {
+  if (!avatar && avatarLocalPath) {
     throw new ApiError(
       500,
       "Internal server error when uploading Avatar file.",
@@ -56,7 +57,7 @@ const registerUser = asyncHandler(async (req, res) => {
     username,
     email,
     password,
-    profile_image: avatar.url
+    profile_image: avatar?.url
   });
 
 

@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
+
 import { User } from "../models/user.model.js";
 import { Post } from "../models/post.model.js";
-import { Post_Like } from "../models/post_like.model.js";
+import { Post_Comment } from "../models/post_comment.model.js";
+
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { Post_Comment } from "../models/post_comment.model.js";
 
 async function removeCommentFromAll(comment_id) {
   try {

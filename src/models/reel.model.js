@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 const reelSchema = new Schema({
-  video_url: [{
+  reel_url: [{
     type: String,
   }],
   user: {
