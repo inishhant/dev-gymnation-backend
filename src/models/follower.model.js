@@ -1,14 +1,14 @@
 import mongoose, { Schema } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 
 const followerSchema = new Schema(
   {
-    listOfUserId: {
-        type: Array
+    userId: {
+      type: Schema.Types.ObjectId,  //  The user who is being followed
+      ref: "User"
     },
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: "User"
+    followerId: {
+      type: Schema.Types.ObjectId,  // The user who follows
+      ref: "User"
     }
   },
   {

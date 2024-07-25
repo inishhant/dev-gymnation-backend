@@ -35,15 +35,13 @@ const registerUser = asyncHandler(async (req, res) => {
   if (existedUser) {
     throw new ApiError(409, "User already exists");
   }
-  const avatarLocalPath = req.file.path;
+  
+  const avatarLocalPath = req.file?.path;
+  
+  let avatar;
+  if(avatarLocalPath) avatar = await uploadOnCloudinary(avatarLocalPath);
 
-  if (!avatarLocalPath) {
-    throw new ApiError(400, "Avatar is required");
-  }
-
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
-
-  if (!avatar) {
+  if (!avatar && avatarLocalPath) {
     throw new ApiError(
       500,
       "Internal server error when uploading Avatar file.",
@@ -56,7 +54,7 @@ const registerUser = asyncHandler(async (req, res) => {
     username,
     email,
     password,
-    profile_image: avatar.url
+    profile_image: avatar?.url
   });
 
 
@@ -66,7 +64,6 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Internal server error when creating user.");
   }
 
-  // console.log(createdUser)
   return res
     .status(201)
     .json(
@@ -187,37 +184,40 @@ const updatePassword = asyncHandler(async (req, res) => {
 const updateAccountDetails = asyncHandler(async (req, res) => {
   const { firstName, lastName, username, email, bio, address } = req.body;
 
-  if (!(firstName && username && email)) {
-    throw new ApiError(400, "first name, username, and email are required.");
+  if (!firstName && !lastName && !username && !email && !bio && !address) {
+    throw new ApiError(400, "At least one field is required for update.");
   }
 
   const userId = req.user?._id;
 
-  const isUserNameExist = await User.findOne({
-    username,
-    _id: { $ne: userId },
-  });
+  if (username) {
+    const isUserNameExist = await User.findOne({
+      username,
+      _id: { $ne: userId },
+    });
 
-  if (isUserNameExist) {
-    throw new ApiError(400, "This username is allready taken.");
+    if (isUserNameExist) {
+      throw new ApiError(400, "This username is already taken.");
+    }
   }
+
+  const fieldsToUpdate = { firstName, lastName, username, email, bio, address };
+  const updateFields = Object.fromEntries(
+    Object.entries(fieldsToUpdate).filter(([_, value]) => value)
+  );
 
   const user = await User.findByIdAndUpdate(
     userId,
     {
-      $set: {
-        fullName,
-        lastName,
-        username,
-        email,
-        bio,
-        address
-      }
+      $set: updateFields
+    },
+    { 
+      new: true 
     }
   ).select("-password -refreshToken")
 
   if (!user) {
-    throw new ApiError(400, "We are getting error when update the account details.")
+    throw new ApiError(400, "We encountered an error while updating the account details.")
   }
 
   return res

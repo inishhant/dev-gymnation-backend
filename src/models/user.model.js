@@ -57,7 +57,11 @@ const userSchema = new Schema(
     address: addressSchema,
     profile_image: {
       type: String, // cloud url
-      required: true, // we have to remove required field and add default image if user not upload
+    },
+    Account_type: {
+      type: String,
+      enum: ['public', 'private'],
+      default: 'public'
     },
     refreshToken: {
       type: String,
@@ -73,13 +77,13 @@ const userSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Reel'
     }],
-    follower: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Follower'
+    followersCount: {
+      type: Number,
+      default: 0
     },
-    following: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Following'
+    followingCount: {
+      type: Number,
+      default: 0
     },
   },
   {

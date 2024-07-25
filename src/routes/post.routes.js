@@ -10,6 +10,7 @@ import {
     deletePost
 } from "../controllers/post.controller.js"
 import { likePost } from "../controllers/post_like.controller.js";
+import { commentOnPost, deleteCommentFromPost } from "../controllers/post_comment.controller.js";
 
 
 const router = Router();
@@ -29,10 +30,21 @@ router.route("/delete").post(
     deletePost
 )
 
-// like a post
+// like/dislike a post
 router.route("/like").post(
     verifyJWT,
     likePost
+)
+
+// comment on post
+router.route("/comment").post(
+    verifyJWT,
+    commentOnPost
+)
+// delete a comment
+router.route("/comment/delete").post(
+    verifyJWT,
+    deleteCommentFromPost
 )
 
 
