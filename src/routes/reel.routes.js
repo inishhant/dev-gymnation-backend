@@ -6,7 +6,7 @@ import {upload} from "../middlewares/multer.middleware.js";
 
 // controllers
 import { createReel, deleteReel } from "../controllers/reel.controller.js";
-import { commentOnReel, deleteCommentFromReel } from "../controllers/reel_comment.controller.js";
+import { commentOnReel, deleteCommentFromReel, editComment } from "../controllers/reel_comment.controller.js";
 import { likeReel } from "../controllers/reel_like.controller.js";
 
 
@@ -37,6 +37,13 @@ router.route("/comment").post(
     verifyJWT,
     commentOnReel
 )
+
+// edit a comment
+router.route("/comment/edit").post(
+    verifyJWT,
+    editComment
+)
+
 // delete a comment
 router.route("/comment/delete").post(
     verifyJWT,

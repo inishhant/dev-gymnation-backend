@@ -21,19 +21,19 @@ async function removeReelsFromAll(reel_id) {
 }
 
 async function deleteReelsAndChildren(comment_id) {
-    // Find the Reels by its ID
-    const reel = await Reel_Comment(comment_id);
+  // Find the Reels by its ID
+  const reel = await Reel_Comment(comment_id);
 
-    // Check if the Reels has child Reels
-    if (reel.reels && reel.reels.length > 0) {
-        for (let childReelId of reel.reels) {
-            // Recursively delete child Reels
-            await deleteReelsAndChildren(childReelId);
-        }
+  // Check if the Reels has child Reels
+  if (reel.reels && reel.reels.length > 0) {
+    for (let childReelId of reel.reels) {
+      // Recursively delete child Reels
+      await deleteReelsAndChildren(childReelId);
     }
+  }
 
-    // Delete the parent comment
-    await Reel_Comment.findByIdAndDelete(comment_id);
+  // Delete the parent comment
+  await Reel_Comment.findByIdAndDelete(comment_id);
 }
 
 const commentOnReel = asyncHandler(async (req, res) => {
@@ -106,13 +106,13 @@ const deleteCommentFromReel = asyncHandler(async (req, res) => {
   }
 
   const removeCommentAssociation = await removeReelsFromAll(comment._id);
-  if(comment.comments && comment.comments.length>0){
-    for (let curr_comment of comment.comments){
-        const deleteChildComment = await deleteReelsAndChildren(curr_comment);
+  if (comment.comments && comment.comments.length > 0) {
+    for (let curr_comment of comment.comments) {
+      const deleteChildComment = await deleteReelsAndChildren(curr_comment);
     }
   }
   const deleteComment = await Reel_Comment.findByIdAndDelete(comment._id);
-  if(!deleteComment){
+  if (!deleteComment) {
     throw new ApiError(409, "Failed to delete comment");
   }
 
@@ -121,4 +121,20 @@ const deleteCommentFromReel = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, comment, "Comment deleted successfully"));
 });
 
-export { commentOnReel, deleteCommentFromReel };
+const editComment = asyncHandler(async (req, res) => {
+  const { comment_id, message } = req.body;
+  const updateComment = await Reel_Comment.findByIdAndUpdate(comment_id, {
+    $set: {
+      message: message,
+    },
+  });
+  if (!updateComment) {
+    throw new ApiError(409, "Unable to update comment");
+  }
+
+  return res
+    .status(201)
+    .json(new ApiResponse(200, updateComment, "Updated comment successfully"));
+});
+
+export { commentOnReel, deleteCommentFromReel, editComment };

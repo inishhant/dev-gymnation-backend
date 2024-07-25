@@ -121,4 +121,21 @@ const deleteCommentFromPost = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, comment, "Comment deleted successfully"));
 });
 
-export { commentOnPost, deleteCommentFromPost };
+const editComment = asyncHandler(async (req, res)=>{
+  const { comment_id, message } = req.body;
+  const updateComment = await Post_Comment.findByIdAndUpdate(
+    comment_id,
+    {
+      $set: {
+        message: message,
+      }
+    }
+  );
+  if(!updateComment){
+    throw new ApiError(409, 'Unable to update comment');
+  }
+
+  return res.status(201).json(new ApiResponse(200, updateComment, "Updated comment successfully"))
+})
+
+export { commentOnPost, deleteCommentFromPost, editComment };
