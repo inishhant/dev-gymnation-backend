@@ -9,6 +9,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 const likePost = asyncHandler(async (req, res) => {
   const { post_id } = req.body;
   const user = await req.user;
+  
   const userExist = await User.findById(user._id);
   if (!userExist) {
     throw new ApiError(409, "Invalid user_id");

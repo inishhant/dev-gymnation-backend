@@ -16,14 +16,17 @@ const postCommentSchema = new Schema(
       ref: "Post",
       required: true,
     },
-    comments: [{
+    comments: [
+      {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Post_Comment",
-    }],
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
+
 
 export const Post_Comment = mongoose.model("Post_Comment", postCommentSchema);

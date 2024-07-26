@@ -9,6 +9,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 const likeReel = asyncHandler(async (req, res) => {
   const { reel_id } = req.body;
   const user = await req.user;
+
+  console
   const userExist = await User.findById(user._id);
   if (!userExist) {
     throw new ApiError(409, "User does not exist");

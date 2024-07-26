@@ -22,11 +22,11 @@ async function removeReelsFromAll(reel_id) {
 
 async function deleteReelsAndChildren(comment_id) {
   // Find the Reels by its ID
-  const reel = await Reel_Comment(comment_id);
+  const reel = await Reel_Comment.findById(comment_id);
 
   // Check if the Reels has child Reels
-  if (reel.reels && reel.reels.length > 0) {
-    for (let childReelId of reel.reels) {
+  if (reel.comments && reel.comments.length > 0) {
+    for (let childReelId of reel.comments) {
       // Recursively delete child Reels
       await deleteReelsAndChildren(childReelId);
     }
