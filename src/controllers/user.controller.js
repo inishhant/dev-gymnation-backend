@@ -21,7 +21,7 @@ const generateAccessAndRefreshToken = async (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { firstName, lastName, username, email, password } = req.body;
+  const { firstName, lastName, username, email, password, account_type } = req.body;
   if (
     [firstName, lastName, username, email, password].some((field) => field?.trim() === "")
   ) {
@@ -57,7 +57,8 @@ const registerUser = asyncHandler(async (req, res) => {
     username,
     email,
     password,
-    profile_image: avatar?.url
+    profile_image: avatar?.url,
+    account_type: account_type || 'public'
   });
 
 

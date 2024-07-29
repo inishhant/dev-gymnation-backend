@@ -3,12 +3,31 @@ import { User } from "../models/user.model.js";
 import { Post } from "../models/post.model.js";
 import { Post_Like } from "../models/post_like.model.js";
 import { Post_Comment } from "../models/post_comment.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import {
+  deleteFromCloudinary,
+  uploadOnCloudinary,
+} from "../utils/cloudinary.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-
+async function deleteAssetsFromCloudinary(post_id) {
+  try {
+    const post = await Post.findById(post_id);
+    if (post.image_url && post.image_url.length > 0) {
+      for (let img of post.image_url) {
+        await deleteFromCloudinary(img);
+      }
+    }
+    if (post.video_url && post.video_url.length > 0) {
+      for (let vdo of post.video_url) {
+        await deleteFromCloudinary(vdo);
+      }
+    }
+  } catch (err) {
+    throw new ApiError(408, "Error deleting assets from cloudinary");
+  }
+}
 const createPost = asyncHandler(async (req, res) => {
   const user = await req.user;
   const file = req.files;
@@ -52,17 +71,6 @@ const createPost = asyncHandler(async (req, res) => {
   }
   createdPost.likes = createPostLike._id;
   await createdPost.save();
-  const updateUserPosts = await User.findByIdAndUpdate(userExist._id, {
-    $push: {
-      posts: createdPost._id,
-    },
-  });
-  if (!updateUserPosts) {
-    throw new ApiError(
-      400,
-      "Something went wrong while associating the post with user."
-    );
-  }
 
   return res
     .status(201)
@@ -75,20 +83,13 @@ const deletePost = asyncHandler(async (req, res) => {
 
   const deleteAllComments = await Post_Comment.deleteMany({ post: post_id });
   const deleteAllLikes = await Post_Like.deleteMany({ post: post_id });
+  const deleteAseets = await deleteAssetsFromCloudinary(post_id);
 
   const post = await Post.findByIdAndDelete(post_id);
   if (!post) {
     throw new ApiError(404, "Post not found");
   }
 
-  const updateUserPosts = await User.findByIdAndUpdate(user._id, {
-    $pull: {
-      posts: post_id,
-    },
-  });
-  if (!updateUserPosts) {
-    throw new ApiError(400, "Something went wrong while deleting the post");
-  }
   return res
     .status(201)
     .json(new ApiResponse(200, "Post deleted successfully"));

@@ -71,14 +71,6 @@ const userSchema = new Schema(
     accessToken: {
       type: String,
     },
-    posts: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Post'
-    }],
-    reels: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Reel'
-    }],
     follower: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Follower'

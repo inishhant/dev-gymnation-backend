@@ -18,9 +18,11 @@ app.use(cookieParser())
 import userRouter from './routes/user.routes.js';
 import postRouter from './routes/post.routes.js';
 import reelRouter from './routes/reel.routes.js';
+import storyRouter from './routes/story.routes.js';
 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/posts', postRouter);
 app.use('/api/v1/reels', reelRouter);
+app.use('/api/v1/story', storyRouter);
 
 export {app}

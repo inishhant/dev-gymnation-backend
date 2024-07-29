@@ -2,13 +2,24 @@ import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
 import { Reel } from "../models/reel.model.js";
 import { Reel_Like } from "../models/reel_like.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Reel_Comment } from "../models/reel_comment.model.js";
 
-
+async function deleteAssetsFromCloudinary(reel_id) {
+  try {
+    const reel = await Reel.findById(reel_id);
+    if (reel.reel_url && reel.reel_url.length > 0) {
+      for (let _reel of reel.reel_url) {
+        await deleteFromCloudinary(_reel);
+      }
+    }
+  } catch (err) {
+    throw new ApiError(408, "Error deleting assets from cloudinary");
+  }
+}
 const createReel = asyncHandler(async (req, res) => {
   const user = await req.user;
   const file = req.files;
@@ -45,17 +56,6 @@ const createReel = asyncHandler(async (req, res) => {
   }
   createdReel.likes = createReelLike._id;
   await createdReel.save();
-  const updateUserReels = await User.findByIdAndUpdate(userExist._id, {
-    $push: {
-      reels: createdReel._id,
-    },
-  });
-  if (!updateUserReels) {
-    throw new ApiError(
-      400,
-      "Something went wrong while associating the Reel with user."
-    );
-  }
 
   return res
     .status(201)
@@ -73,20 +73,13 @@ const deleteReel = asyncHandler(async (req, res) => {
 
   const deleteAllComments = await Reel_Comment.deleteMany({reel: reel_id});
   const deleteAllLikes = await Reel_Like.deleteMany({reel: reel_id});
-
+  const deleteAseets = await deleteAssetsFromCloudinary(reel_id);
+  
   const reel = await Reel.findByIdAndDelete(reel_id);
   if (!reel) {
     throw new ApiError(404, "Reel not found");
   }
 
-  const updateUserReels = await User.findByIdAndUpdate(user._id, {
-    $pull: {
-      reels: reel_id,
-    },
-  });
-  if (!updateUserReels) {
-    throw new ApiError(400, "Something went wrong while deleting the reel");
-  }
   return res
     .status(201)
     .json(new ApiResponse(200, "Reel deleted successfully"));
