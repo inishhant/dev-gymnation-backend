@@ -88,7 +88,7 @@ const deleteStory = asyncHandler(async (req, res) => {
 
   const deleteAllViews = await Story_View.deleteMany({ story: story_id });
   const deleteAllLikes = await Story_Like.deleteMany({ story: story_id });
-  const deleteAseets = await deleteAssetsFromCloudinary(story_id);
+  const deleteAssets = await deleteAssetsFromCloudinary(story_id);
 
   const story = await Story.findByIdAndDelete(story_id);
   if (!story) {
